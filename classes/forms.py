@@ -19,7 +19,7 @@ class StudentForm(forms.ModelForm):
 	class Meta:
 		model = Student
 		# classform --> from model
-		fields = ["Classroom"]
+		fields = [ "name" , "date_of_birth" , "gender" , "exam_grade" , "Classroom"  ]
 
 
 

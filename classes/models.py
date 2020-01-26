@@ -46,5 +46,14 @@ class Student(models.Model):
 	exam_grade = models.CharField(max_length=105, choices = GRADE )
 
 	Classroom = models.ForeignKey(Classroom, on_delete= models.CASCADE)
+	
+
+
+
+	#-------------------------
+
+	def __str__(self):
+		return "%s studying %s" % (self.name, self.classroom.name)
+		
 
 	

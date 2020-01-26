@@ -3,7 +3,7 @@ from django.contrib import messages
 
 from django.contrib.auth import login, authenticate, logout 
 
-from .models import Classroom
+from .models import Classroom, Student
 from .forms import ClassroomForm, RegisterForm, LoginForm , StudentForm
 
 
@@ -80,8 +80,12 @@ def classroom_list(request):
 
 def classroom_detail(request, classroom_id):
 	classroom = Classroom.objects.get(id=classroom_id)
+
+	students = classroom.student_set.all().order_by("name", "exam_grade")
+
 	context = {
 		"classroom": classroom,
+		"students": students, 
 	}
 	return render(request, 'classroom_detail.html', context)
 
@@ -113,41 +117,6 @@ def classroom_create(request):
 
 #------------------------------------------------------------------------
 
-def student_create(request, classroom_id):
-	classroom_obj = Classroom.objects.get(id=classroom_id)
-
-	if request.user.is_anonymous:
-		return redirect("login")
-
-	if request.user != classroom_obj.teacher:
-		return redirect("classroom_detail", args= [classroom_id])
-	   # return redirect("classroom_detail", kwargs={"classroom_id":| classroom_id})
-
-
-	form = StudentForm()
-
-	if request.method == "POST":
-		form = StudentForm(request.POST )
-
-		if form.is_valid():
-			student_obj = form.save(commit=False)
-			# form.save(commit=False)
-			student_obj.classroom = classroom_obj
-			student_obj.save()
-
-			messages.success(request, "Successfully Created!")
-			return redirect("classroom-detail", args= [classroom_id] )
-
-		# print (form.errors)
-
-	context = {
-		"form": form,
-	}
-	return render(request, 'create_student.html', context)
-
-
-
-#------------------------------------------------------------------------
 
 
 
@@ -168,7 +137,154 @@ def classroom_update(request, classroom_id):
 	return render(request, 'update_classroom.html', context)
 
 
+
+
+#------------------------------------------------------------------------
+
+
+
+
+
 def classroom_delete(request, classroom_id):
 	Classroom.objects.get(id=classroom_id).delete()
 	messages.success(request, "Successfully Deleted!")
 	return redirect('classroom-list')
+
+
+
+
+
+
+#------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------
+
+
+
+
+
+
+def student_create(request, classroom_id):
+	classroom_obj = Classroom.objects.get(id=classroom_id)
+
+	if request.user.is_anonymous:
+		return redirect("login")
+
+	if request.user != classroom_obj.teacher:
+		return redirect("classroom_detail", classroom_id)
+		# return redirect("classroom_detail", args= [classroom_id])
+
+	   # return redirect("classroom_detail", kwargs={"classroom_id":| classroom_id})
+
+
+	form = StudentForm()
+
+	if request.method == "POST":
+		form = StudentForm(request.POST )
+
+		if form.is_valid():
+			student_obj = form.save(commit=False)
+			# form.save(commit=False)
+			student_obj.classroom = classroom_obj
+			student_obj.save()
+
+			messages.success(request, "Successfully Created!")
+			return redirect("classroom-detail", classroom_id )
+			# return redirect("classroom-detail", args= [classroom_id] )
+
+		# print (form.errors)
+
+	context = {
+		"form": form,
+		"classroom_id": classroom_id, 
+	}
+	return render(request, 'create_student.html', context)
+
+
+
+#------------------------------------------------------------------------
+
+
+
+def student_update(request, classroom_id, student_id):
+	classroom_obj = Classroom.objects.get(id=classroom_id)
+	student_obj = Student.objects.get(id=student_id)
+
+
+	if request.user.is_anonymous:
+		return redirect("login")
+
+	if request.user != classroom_obj.teacher:
+		return redirect("classroom_detail", classroom_id)
+		# return redirect("classroom_detail", args= [classroom_id])
+
+	   # return redirect("classroom_detail", kwargs={"classroom_id":| classroom_id})
+
+
+	form = StudentForm(instance=student_obj)
+
+	if request.method == "POST":
+		form = StudentForm(request.POST , instance=student_obj)
+
+		if form.is_valid():
+			# student_obj = form.save(commit=False)
+			# form.save(commit=False)
+			# student_obj.classroom = classroom_obj
+			# student_obj.save()
+			form.save()
+
+			messages.success(request, "Successfully update!")
+			return redirect("classroom-detail", classroom_id )
+			# return redirect("classroom-detail", args= [classroom_id] )
+
+		# print (form.errors)
+
+	context = {
+		"form": form,
+		"classroom_id": classroom_id, 
+		"student": student_obj , 
+	}
+
+	return render(request, 'update_student.html', context)
+
+
+
+
+#------------------------------------------------------------------------
+
+
+
+
+
+# def student_delete(request, classroom_id):
+# 	Classroom.objects.get(id=classroom_id).delete()
+# 	messages.success(request, "Successfully Deleted!")
+# 	return redirect('classroom-list')
+
+
+
+
+
+def student_delete(request, classroom_id, student_id):
+
+	classroom_obj = Classroom.objects.get(id=classroom_id)
+	
+	if request.user.is_anonymous:
+		return redirect("login")
+
+	if request.user != classroom_obj.teacher:
+		return redirect("classroom_detail", classroom_id)
+
+
+	Student.objects.get(id=student_id).delete()
+
+	return redirect("classroom-detail", classroom_id)
+
+
+
+
+
+#------------------------------------------------------------------------
+
+

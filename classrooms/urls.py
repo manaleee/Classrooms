@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from classes import views
+from classes import views 
+from classes import models
 
 
 #------------------------------------------------------------------------------------------------------
@@ -27,9 +28,41 @@ urlpatterns = [
 
 
 
-    path('classrooms/<int:classroom_id>/students/create/', views.student_create, name='student_create'),
+#------------------------------------------------------------------------------------------------------
+
+
+    path('classrooms/<int:classroom_id>/students/create/', views.student_create, name='student-create'),
+
+
+
+
+#------------------------------------------------------------------------------------------------------
+
+    
+    # path('classrooms/<int:classroom_id>/students/update/', views.student_update, name='student-update'),
+
+
+
+    path('classrooms/<int:classroom_id>/students/<int:student_id>/update/', views.student_update, name='student-update'),
+
+    path('classrooms/<int:classroom_id>/students/<int:student_id>/delete/', views.student_delete, name='student-delete'),
+
+
+
+
+#------------------------------------------------------------------------------------------------------
+
+
+
 
 ]
+
+
+
+
+
+
+
 
 #------------------------------------------------------------------------------------------------------
 

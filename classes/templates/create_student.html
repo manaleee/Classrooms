@@ -6,11 +6,18 @@
 {% block content %}
 
 
-	<form action="{% url 'student-create' %}" method="POST" >
+
+ 
+	<form action="{% url 'student-create' classroom_id %}" method="POST" >
 		{% csrf_token %}
 		{{form|crispy}}
-		<input type="submit" value="Add" class="btn" style="background-color: #e3f2fd; color: black;">
+		<input type="submit"        value="Add"       class="btn" style="background-color: #e3f2fd; color: black;">
 	</form>
+
+
+
+
+
 
 
 {% endblock content %}
